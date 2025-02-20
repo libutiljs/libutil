@@ -1,0 +1,6 @@
+{
+  "extends": ["@libconfig/biome/biome"],
+  "files": {
+    "include": ["*.json", "packages/*/src/**", "packages/*/*.json"]
+  }
+}

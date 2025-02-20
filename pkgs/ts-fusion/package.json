@@ -1,0 +1,36 @@
+{
+  "type": "module",
+  "name": "@libutil/ts-fusion",
+  "version": "0.0.0",
+  "author": "Slee Woo",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": ["pkg/*"],
+  "exports": {
+    ".": {
+      "types": "./pkg/index.d.ts",
+      "default": "./pkg/index.mjs"
+    }
+  },
+  "scripts": {
+    "// ✨ linters": "",
+    "prelint": "biome format --fix",
+    "lint": "biome lint",
+    "// ✨ types": "",
+    "typecheck": "tsc",
+    "posttypecheck": "resolve-tspaths --ext d.ts",
+    "// ✨ build": "",
+    "prebuild:000": "rimraf pkg",
+    "prebuild:001": "pnpm run lint",
+    "prebuild:002": "pnpm run typecheck",
+    "prebuild": "set -e; for i in 0 1 2; do pnpm run prebuild:00${i}; done",
+    "build": "../../esbuild.mjs index"
+  },
+  "dependencies": {
+    "crc": "^4.3.2",
+    "handlebars": "^4.7.8",
+    "ts-morph": "^25.0.1"
+  }
+}

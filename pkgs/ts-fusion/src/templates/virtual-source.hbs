@@ -1,0 +1,28 @@
+import type * as sourceTypes from "{{sourceFile}}";
+
+type IgnoredTypes =
+  | Date
+  | RegExp
+  | Function;
+
+type DiscriminateDeep<T> = T extends IgnoredTypes
+  ? T
+  : T extends object
+    ? { [K in keyof T]: DiscriminateDeep<T[K]> }
+    : { "{{discriminationKey}}": T };
+
+type SimplifyDeep<T> = T extends IgnoredTypes
+  ? T
+  : T extends { "{{discriminationKey}}": unknown }
+    ? T["{{discriminationKey}}"]
+    : T extends object
+      ? {
+          [K in keyof T]: T[K] extends { "{{discriminationKey}}": unknown }
+            ? T[K]["{{discriminationKey}}"]
+            : SimplifyDeep<T[K]>;
+        }
+      : T;
+
+{{#each sourceTypes}}
+export type {{name}} = SimplifyDeep<DiscriminateDeep<sourceTypes.{{name}}>>;
+{{/each}}
