@@ -33,10 +33,14 @@ export default async (
     project.addSourceFileAtPath(file);
   }
 
-  const createVirtualSourceFile = (file: FileOpt) => {
-    const sourceFile =
-      project.getSourceFile(file.path) || // in case file already added
-      project.addSourceFileAtPath(file.path);
+  const createVirtualSourceFile = async (file: FileOpt) => {
+    let sourceFile = project.getSourceFile(file.path);
+
+    if (sourceFile) {
+      await sourceFile.refreshFromFileSystem();
+    } else {
+      sourceFile = project.addSourceFileAtPath(file.path);
+    }
 
     const sourceTypes = sourceFile.getTypeAliases().flatMap((e) => {
       if (!e.isExported()) {
@@ -67,7 +71,7 @@ export default async (
   for (const file of files.map((e) => {
     return typeof e === "string" ? { path: e } : e;
   })) {
-    const sourceFile = createVirtualSourceFile(file);
+    const sourceFile = await createVirtualSourceFile(file);
 
     const sourceTypes = sourceFile
       .getTypeAliases()
